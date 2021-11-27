@@ -1,40 +1,37 @@
 import discord
-import time
-from datetime import datetime
-import json
-import requests
 from discord.ext import commands, tasks
 import asyncio
+import time
+import News
+import Weather
+def timeshow():
+    result = time.localtime(time.time())
+    return  str(result.tm_mon) + "/" + str(result.tm_mday) + "\t" + str(result.tm_hour) + ":" + str(result.tm_min)
+
 bot=commands.Bot(command_prefix='[')
-target_news_channel_id_list = []#put your news channel_Id
-target_weather_channel_id_list = []#put your weather channel_Id
+news_channel = 792637087018778674
+weather_channel = 798103577390219304
 @tasks.loop(hours=1)
 async def called_once_a_day():
-    if (time.strftime("%H") == "10"):
-        weather_channer = bot.get_channel("")#put your main channel_Id
-        for target_channel_id in target_news_channel_id_list:
-            message_channel = bot.get_channel(target_channel_id)
-            async for msg in bot.get_channel(target_channel_id).history(limit=10000):
-                await msg.delete()
-            channel = bot.get_channel(target_channel_id)
-            response = requests.get("http://localhost/discordbot/new_api.php")
-            for i in response.json():
-                await channel.send(i["url"])
-            await channel.send("\nLast update time:" + i["updateTime"] + "\tPlease, Input [update to update the latest!")
-            time.sleep(3)
-        for target_channel_id in target_weather_channel_id_list:
-            message_channel = bot.get_channel(target_channel_id)
-            async for msg in bot.get_channel(target_channel_id).history(limit=10000):
-                await msg.delete()
-            response = requests.get("http://localhost/discordbot/weather_api.php")
-            channelweather = bot.get_channel(target_channel_id)
-            outputString = ""
-            for i in response.json():
-                if (i["updateTime"] == ""):
-                    outputString += "\n" + i["name"] + "\ttemperature:" + i["mintemp"] + "~" + i["maxtemp"] + "C\tweather:" + i["des"] + "\tsun rise:" + i["sunrise"] + "\tsun set:" + i["sunset"] + "\n\t"
-                else:
-                    outputString += "\nLast update time:" + i["updateTime"] + "\tPlease, Input [update to update the latest!"
-            await channelweather.send(outputString)
+    if (time.strftime("%H") == "18"):
+        discord_weather_channel = bot.get_channel(weather_channel)
+        discord_news_channel = bot.get_channel(news_channel)
+        async for msg in discord_news_channel.history(limit=10000):
+            await msg.delete()
+        async for msg in discord_weather_channel.history(limit=10000):
+            await msg.delete()
+        
+        #取得天氣
+        outputString = Weather.weatherGet()
+        await channelweather.send(discord_weather_channel)
+        await discord_weather_channel.send("\n最後更新時間:"+timeshow()+"\t請輸入[update來得到最新資訊!")
+        
+        #取得新聞
+        outputString = News.newsGet()
+    
+        for i in outputString:
+            await discord_news_channel.send(i["url"])
+        
 @called_once_a_day.before_loop
 async def before():
     await bot.wait_until_ready()
@@ -45,27 +42,21 @@ called_once_a_day.start()
 async def on_message(message):
     message_channel = message.channel
     if message.content.startswith('[update'):
-        for target_channel_id in target_news_channel_id_list:
-            message_channel = bot.get_channel(target_channel_id)
-            async for msg in bot.get_channel(target_channel_id).history(limit=10000):
-                await msg.delete()
-            channel = bot.get_channel(target_channel_id)
-            response = requests.get("http://localhost/discordbot/new_api.php")
-            for i in response.json():
-                await channel.send(i["url"])
-            await channel.send("\nLast update time:" + i["updateTime"] + "\tPlease, Input [update to update the latest!")
-            time.sleep(3)
-        for target_channel_id in target_weather_channel_id_list:
-            message_channel = bot.get_channel(target_channel_id)
-            async for msg in bot.get_channel(target_channel_id).history(limit=10000):
-                await msg.delete()
-            response = requests.get("http://localhost/discordbot/weather_api.php")
-            channelweather = bot.get_channel(target_channel_id)
-            outputString = ""
-            for i in response.json():
-                if (i["updateTime"] == ""):
-                    outputString += "\n" + i["name"] + "\ttemperature:" + i["mintemp"] + "~" + i["maxtemp"] + "C\tweather:" + i["des"] + "\tsun rise:" + i["sunrise"] + "\tsun set:" + i["sunset"] + "\n\t"
-                else:
-                    outputString += "\nLast update time:" + i["updateTime"] + "\tPlease, Input [update to update the latest!"
-            await channelweather.send(outputString)
-bot.run("")#your bot key
+        discord_weather_channel = bot.get_channel(weather_channel)
+        discord_news_channel = bot.get_channel(news_channel)
+        async for msg in discord_news_channel.history(limit=10000):
+            await msg.delete()
+        async for msg in discord_weather_channel.history(limit=10000):
+            await msg.delete()
+        
+        #取得天氣
+        outputString = Weather.weatherGet()
+        await discord_weather_channel.send(outputString)
+        await discord_weather_channel.send("\n最後更新時間:"+timeshow()+"\t請輸入[update來得到最新資訊!")
+        
+        #取得新聞
+        outputString = News.newsGet()
+        for i in outputString:
+            await discord_news_channel.send(i["url"])
+        
+bot.run("your discord bot run key")
