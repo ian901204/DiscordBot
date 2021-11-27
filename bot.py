@@ -27,7 +27,7 @@ async def called_once_a_day():
             async for msg in bot.get_channel(target_channel_id).history(limit=10000):
                 await msg.delete()
             response = requests.get("http://localhost/discordbot/weather_api.php")
-            channelweather = bot.get_channel(798103577390219304)
+            channelweather = bot.get_channel(target_channel_id)
             outputString = ""
             for i in response.json():
                 if (i["updateTime"] == ""):
@@ -60,7 +60,7 @@ async def on_message(message):
             async for msg in bot.get_channel(target_channel_id).history(limit=10000):
                 await msg.delete()
             response = requests.get("http://localhost/discordbot/weather_api.php")
-            channelweather = bot.get_channel(798103577390219304)
+            channelweather = bot.get_channel(target_channel_id)
             outputString = ""
             for i in response.json():
                 if (i["updateTime"] == ""):
