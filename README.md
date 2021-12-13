@@ -6,3 +6,5 @@ News API yoy have to get a API key from https://newsapi.org/
 
 
 Weather API is from https://api.openweathermap.org
+
+by 沈育安
