@@ -1,6 +1,8 @@
 import json
 import requests
+import getConfig
 def newsGet():
-    response = requests.get("http://newsapi.org/v2/top-headlines?country=tw&apiKey=###")#put your news API key
+    key = getConfig.getConfig().news_api_key
+    response = requests.get(f"https://newsapi.org/v2/top-headlines?country=tw&apiKey={key}")#put your news API key
     data = response.json()
     return data["articles"]

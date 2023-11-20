@@ -1,12 +1,14 @@
 import json
 import requests
 import time
-
+import os
+import getConfig
 def weatherGet():
+    key = getConfig.getConfig().weather_api_key
     city = [["taipei","台北"],["keelung","基隆"],["Taitung","台東"],["Pingtung","屏東"],["Yilan","宜蘭"],["Tainan","台南"],["Kaohsiung","高雄"]]
     outputString=""
     for i in city:
-        response = requests.get("https://api.openweathermap.org/data/2.5/weather?q=" + i[0] + "&appid=###&lang=zh_tw&units=metric")#put your OpenWeather API key
+        response = requests.get("https://api.openweathermap.org/data/2.5/weather?q=" + i[0] + f"&appid={key}&lang=zh_tw&units=metric")#put your OpenWeather API key
         data = response.json()
         sunrise = time.localtime(int(data["sys"]["sunrise"]))
         sunset = time.localtime(int(data["sys"]["sunset"]))

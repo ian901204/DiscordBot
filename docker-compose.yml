@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  bot:
+    container_name: discord-bot
+    build: .
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/app
