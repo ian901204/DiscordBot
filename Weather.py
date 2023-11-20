@@ -3,8 +3,7 @@ import requests
 import time
 import os
 import getConfig
-def weatherGet():
-    key = getConfig.getConfig().weather_api_key
+def weatherGet(key):
     city = [["taipei","台北"],["keelung","基隆"],["Taitung","台東"],["Pingtung","屏東"],["Yilan","宜蘭"],["Tainan","台南"],["Kaohsiung","高雄"]]
     outputString=""
     for i in city:

@@ -4,12 +4,14 @@ import asyncio
 import time
 import News
 import os
+import getConfig
 import Weather
 import traceback
 
 def timeshow():
     result = time.localtime(time.time())
     return  str(result.tm_mon) + "/" + str(result.tm_mday) + "\t" + str(result.tm_hour) + ":" + str(result.tm_min)
+config = getConfig.getConfig()
 intents = discord.Intents.all() # or .all() if you ticked all, that is easier
 intents.members = True # If you ticked the SERVER MEMBERS INTENT
 bot=commands.Bot(command_prefix='[', intents = intents)
@@ -28,12 +30,12 @@ async def on_message(message):
                 await msg.delete()
             
             #取得天氣
-            outputString = Weather.weatherGet()
+            outputString = Weather.weatherGet(key=config.weather_api_key)
             await discord_weather_channel.send(outputString)
             await discord_weather_channel.send("\n最後更新時間:"+timeshow()+"\t請輸入[update來得到最新資訊!")
             
             #取得新聞
-            outputString = News.newsGet()
+            outputString = News.newsGet(key=config.news_api_key)
             for i in outputString:
                 await discord_news_channel.send(i["url"])
         except:
@@ -69,6 +71,6 @@ async def before():
 async def main():
     async with bot:
         called_once_a_day.start()
-        await bot.start('NzkyNDAyOTAwMzQwMDQ3OTAz.GcZ5bZ.CqPnraSaugBC7sY1gYLwp18GAcWT3edqpAe_4M')
+        await bot.start(config.discord_token)
 
 asyncio.run(main())

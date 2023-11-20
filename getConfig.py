@@ -6,3 +6,4 @@ class getConfig:
         load_dotenv()
         self.weather_api_key = os.getenv("WEATHER_API_KEY")
         self.news_api_key = os.getenv("NEWS_API_KEY")
+        self.discord_token = os.getenv("DISCORD_TOKEN")
